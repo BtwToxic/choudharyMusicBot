@@ -1,1 +1,4 @@
-python3 -m Dev
+python3 -m Dev &
+python3 web.py &
+
+wait
