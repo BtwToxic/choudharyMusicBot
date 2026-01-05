@@ -53,27 +53,25 @@ class MongoDB:
     async def close(self) -> None:
         await self.mongo.close()
         logger.info("Database connection closed.")
-
     # ─────────────────────────────
-# LOGGER METHODS (FIX)
-# ─────────────────────────────
-async def is_logger(self) -> bool:
-    return self.logger
+    # LOGGER METHODS (FIXED)
+    # ─────────────────────────────
+    async def is_logger(self) -> bool:
+        return self.logger
 
-async def get_logger(self) -> bool:
-    doc = await self.cache.find_one({"_id": "logger"})
-    if doc:
-        self.logger = doc.get("status", False)
-    return self.logger
+    async def get_logger(self) -> bool:
+        doc = await self.cache.find_one({"_id": "logger"})
+        if doc:
+            self.logger = doc.get("status", False)
+        return self.logger
 
-async def set_logger(self, status: bool) -> None:
-    self.logger = status
-    await self.cache.update_one(
-        {"_id": "logger"},
-        {"$set": {"status": status}},
-        upsert=True,
-    )
-
+    async def set_logger(self, status: bool) -> None:
+        self.logger = status
+        await self.cache.update_one(
+            {"_id": "logger"},
+            {"$set": {"status": status}},
+            upsert=True,
+        )
     # ─────────────────────────────
     # CACHE
     # ─────────────────────────────
