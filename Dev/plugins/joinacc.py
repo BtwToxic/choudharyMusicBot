@@ -1,11 +1,7 @@
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import ChatJoinRequest
-
-# ─────────────────────────────
-# CONFIG
-# ─────────────────────────────
-from Dev import app # import your bot client
+from Dev import app 
 
 # ─────────────────────────────
 # DELAY STORAGE (PER GROUP)
@@ -107,6 +103,4 @@ async def auto_accept(client: Client, request: ChatJoinRequest):
         )
     except:
         pass
-
-
-print("🤖 Auto Accept + Delay Bot Started")
+        
