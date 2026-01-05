@@ -19,6 +19,7 @@ SPAM_PATTERNS = [
     r"(free|earn|crypto|forex|profit)",
     r"(join|click|dm me)",
     r"(subscribe|promo|offer)"
+    r"(chut|land|bsdk|gand)"
 ]
 
 
@@ -29,12 +30,9 @@ async def ai_spam_guard(client, message):
 
     if not user:
         return
-
-    # ✅ ALLOW COMMANDS (THIS WAS MISSING)
+        
     if message.text and message.text.startswith("/"):
         return
-
-    # Admin skip
     try:
         member = await client.get_chat_member(chat.id, user.id)
         if member.status in ("administrator", "owner"):
@@ -75,7 +73,7 @@ async def ai_spam_guard(client, message):
                     [[
                         InlineKeyboardButton(
                             "𝘝𝘦𝘳𝘪𝘧𝘺 𝘠𝘰𝘶𝘳𝘴𝘦𝘭𝘧 🌷",
-                            url=f""
+                            url=f"https://t.me/masumX_musicbot?start=true"
                         )
                     ]]
                 )
