@@ -5,11 +5,8 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from Dev import app
 
-# ─────────────────────────────
-# CONFIG
-# ─────────────────────────────
-MAX_MSGS = 2      # msgs
-TIME_WINDOW = 2     # seconds
+MAX_MSGS = 2
+TIME_WINDOW = 2
 SPAM_SCORE_LIMIT = 3
 
 user_msgs = defaultdict(list)
@@ -24,15 +21,17 @@ SPAM_PATTERNS = [
     r"(subscribe|promo|offer)"
 ]
 
-# ─────────────────────────────
-# AI SPAM GUARD
-# ─────────────────────────────
-@app.on_message(filters.group & ~filters.service & ~filters.me)
+
+@app.on_message(filters.group & ~filters.service & ~filters.me, group=1)
 async def ai_spam_guard(client, message):
     user = message.from_user
     chat = message.chat
 
     if not user:
+        return
+
+    # ✅ ALLOW COMMANDS (THIS WAS MISSING)
+    if message.text and message.text.startswith("/"):
         return
 
     # Admin skip
@@ -47,22 +46,18 @@ async def ai_spam_guard(client, message):
     user_msgs[user.id] = [t for t in user_msgs[user.id] if now - t < TIME_WINDOW]
     user_msgs[user.id].append(now)
 
-    # Flood detection
     if len(user_msgs[user.id]) > MAX_MSGS:
         user_score[user.id] += 2
 
     text = (message.text or "").lower()
 
-    # Pattern based AI scoring
     for pattern in SPAM_PATTERNS:
         if re.search(pattern, text):
             user_score[user.id] += 2
 
-    # CAPS abuse
     if message.text and message.text.isupper() and len(message.text) > 6:
         user_score[user.id] += 1
 
-    # Final decision
     if user_score[user.id] >= SPAM_SCORE_LIMIT:
         try:
             await message.delete()
@@ -74,8 +69,8 @@ async def ai_spam_guard(client, message):
                 chat.id,
                 f"🚨 **Spam Detected**\n\n"
                 f"👤 {user.mention}\n"
-                "🧠 AI system Deleted Your Msg\n\n"
-                "⚠️ Warning: Repeated spam = mute / ban.",
+                "🧠 AI system deleted your message.\n\n"
+                "⚠️ Repeated spam may result in mute or ban.",
                 reply_markup=InlineKeyboardMarkup(
                     [[
                         InlineKeyboardButton(
