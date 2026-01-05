@@ -1,4 +1,7 @@
-FROM python:3.11.14-slim
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
 
 RUN apt-get update -y && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ffmpeg curl unzip \
@@ -6,12 +9,9 @@ RUN apt-get update -y && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deno.land/install.sh | sh \
-    && ln -s /root/.deno/bin/deno /usr/local/bin/den
-    
-COPY requirements.txt .
-RUN pip install --no-cache-dir -U pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && ln -s /root/.deno/bin/deno /usr/local/bin/deno
 
+RUN pip3 install -U pip && pip3 install -U -r requirements.txt
 COPY . .
 
-CMD ["bash", "start.sh"]
+CMD ["bash", "siya"]
