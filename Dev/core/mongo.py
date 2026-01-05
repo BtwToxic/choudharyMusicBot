@@ -97,6 +97,23 @@ class MongoDB:
         return self.admin_list[chat_id]
 
     # ─────────────────────────────
+    # LANGUAGE METHODS (RESTORED)
+    # ─────────────────────────────
+    async def set_lang(self, chat_id: int, lang_code: str):
+        await self.langdb.update_one(
+            {"_id": chat_id},
+            {"$set": {"lang": lang_code}},
+            upsert=True,
+        )
+        self.lang[chat_id] = lang_code
+
+    async def get_lang(self, chat_id: int) -> str:
+        if chat_id not in self.lang:
+            doc = await self.langdb.find_one({"_id": chat_id})
+            self.lang[chat_id] = doc["lang"] if doc else "en"
+        return self.lang[chat_id]
+
+    # ─────────────────────────────
     # AUTH METHODS
     # ─────────────────────────────
     async def _get_auth(self, chat_id: int) -> set[int]:
