@@ -72,6 +72,33 @@ class MongoDB:
             {"$set": {"status": status}},
             upsert=True,
         )
+
+    # COMMAND DELETE (DEFAULT ON)
+    async def get_cmd_delete(self, chat_id: int) -> bool:
+        if chat_id not in self.cmd_delete:
+            doc = await self.chatsdb.find_one({"_id": chat_id})
+
+            # 🔥 default ON
+            if not doc or doc.get("cmd_delete", True):
+                self.cmd_delete.append(chat_id)
+
+        return chat_id in self.cmd_delete
+
+
+    async def set_cmd_delete(self, chat_id: int, delete: bool = True) -> None:
+        if delete:
+            if chat_id not in self.cmd_delete:
+                self.cmd_delete.append(chat_id)
+        else:
+            if chat_id in self.cmd_delete:
+                self.cmd_delete.remove(chat_id)
+
+        await self.chatsdb.update_one(
+            {"_id": chat_id},
+            {"$set": {"cmd_delete": delete}},
+            upsert=True,
+        )
+        
     # ─────────────────────────────
     # CACHE
     # ─────────────────────────────
