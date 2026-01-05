@@ -37,6 +37,8 @@ class MongoDB:
 
         self.users = []
         self.usersdb = self.db.users
+        
+        self.verifieddb = self.db.verified_users
 
     async def connect(self) -> None:
         """Check if we can connect to the database.
@@ -56,6 +58,22 @@ class MongoDB:
         """Close the connection to the database."""
         await self.mongo.close()
         logger.info("Database connection closed.")
+
+    # ─────────────────────────────
+    # VERIFICATION METHODS 
+    # ─────────────────────────────
+    async def is_verified(self, user_id: int) -> bool:
+        return bool(await self.verifieddb.find_one({"_id": user_id}))
+
+    async def add_verified(self, user_id: int) -> None:
+        await self.verifieddb.update_one(
+            {"_id": user_id},
+            {"$set": {"_id": user_id}},
+            upsert=True
+        )
+
+    async def remove_verified(self, user_id: int) -> None:
+        await self.verifieddb.delete_one({"_id": user_id})
 
     # CACHE
     async def get_call(self, chat_id: int) -> bool:
