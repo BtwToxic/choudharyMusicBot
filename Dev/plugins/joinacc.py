@@ -1,6 +1,7 @@
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import ChatJoinRequest
+from pyrogram.enums import ChatMembersFilter   # ✅ FIX
 from Dev import app 
 
 # ─────────────────────────────
@@ -13,7 +14,10 @@ JOIN_DELAY = {}   # chat_id : seconds
 # 🔐 ADMIN / OWNER CHECK (FINAL)
 # ─────────────────────────────
 async def is_admin(client, chat_id, user_id):
-    async for m in client.get_chat_members(chat_id, filter="administrators"):
+    async for m in client.get_chat_members(
+        chat_id,
+        filter=ChatMembersFilter.ADMINISTRATORS  # ✅ FIX
+    ):
         if m.user and m.user.id == user_id:
             return True
     return False
@@ -81,7 +85,7 @@ async def auto_accept(client: Client, request: ChatJoinRequest):
     try:
         await request.approve()
     except:
-        return  # already approved / expired
+        return
 
     # 📩 DM user
     try:
@@ -103,4 +107,3 @@ async def auto_accept(client: Client, request: ChatJoinRequest):
         )
     except:
         pass
-        
